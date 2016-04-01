@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/yeti/bootstrap.css" type="text/css" />
+
+
+</head>
+
+<body ng-app='appLearn'>
+    <div class="container" ng-controller="MissatgesController">
+        <h1>Darrers Missatges</h1>
+        <form role="form">
+            <div class="form-group">
+                <div class="input-group">
+                    <input ng-model="missatgeBody" class="form-control" />
+                    <br>
+                    <button class="btn btn-success btn-lg" ng-click="afegirMissatge()">Afegir Missatge</button>
+                </div>
+            </div>
+        </form>
+        <div>
+            <ul class="list-group">
+                <li class="list-group-item" ng-repeat="missatge in missatges">
+                    <strong>{{missatge.username}}</strong>
+                    <p>{{missatge.body}}</p>
+                    <blockquote ng-repeat="review in missatge.reviews">
+                        <small><cite> {{review.createdOn|date}}</cite> - {{review.body}}</small>
+                    </blockquote>
+
+                    <!-- Formulari reviews -->
+                    <form ng-controller="ReviewController" name="reviewForm" novalidate>
+                        <!-- Vista del comentari en viu -->
+                        <blockquote ng-show="review.body">
+                            <small>{{review.body}}</small>
+                        </blockquote>
+                        <!-- Formulari -->
+                        <h5>Enviar comentari:</h5>
+                        <fieldset class="form-group">
+                            <label for="" class="sr-only">Comentari:</label>
+                            <input type="text" ng-model="review.body" class="form-control input-sm" placeholder="Introdueix el teu comentari" required></textarea>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <input type="submit" class="btn btn-primary btn-sm btn-b" ng-click="afegirComentari()" value="Enviar" />
+                        </fieldset>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.min.js"></script>
+
+    <script>
+        var app = angular.module('appLearn', []);
+        
+        //MissatgesController
+        app.controller('MissatgesController', function($scope) {
+            $scope.missatges = [{
+                username: 'xavigimenez.cat',
+                body: 'Angular mola',
+                reviews: [{
+                    body: "Això és una passada!",
+                    createdOn: 1459462674603
+                }]
+            }, {
+                username: 'iocasesnoves.cat',
+                body: 'Aprenent Angular'
+            }];
+            
+            $scope.afegirMissatge = function() {
+                if ($scope.missatgeBody) {
+                    $scope.missatges.unshift({
+                        username: "jofrecasevella.cat",
+                        body: $scope.missatgeBody
+                    });
+                }
+                $scope.missatgeBody = null;
+            };
+        });
+
+        //ReviewController
+        app.controller("ReviewController", function($scope) {
+            //Inicialitzem l'objecte review que contindrà les dades del comentari introduit al formulari.
+            $scope.review = {};
+
+            $scope.afegirComentari = function() {
+                //Afegim la data actual al l'objecte review
+                $scope.review.createdOn = Date.now();
+                
+                //Si el missatge no tenia cap comentari, hi afegim un array buit
+                if (!($scope.missatge.reviews)) {
+                    $scope.missatge.reviews = [];
+                }
+                //Afegim el nom comentaria al missatge corresponent
+                $scope.missatge.reviews.push($scope.review);
+                
+                //Buidem l'objecte review i així també es neteja el formulari
+                $scope.review = {};
+            };
+
+        });
+    </script>
+</body>
+
+</html>
